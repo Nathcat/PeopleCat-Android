@@ -1,9 +1,13 @@
 package com.nathcat.peoplecat_client_android
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import com.nathcat.peoplecat_client_android.ui.theme.PeopleCatAndroidClientTheme
 import com.nathcat.peoplecat_client_android.ui.theme.gradientEnd
 import com.nathcat.peoplecat_client_android.ui.theme.gradientStart
@@ -40,6 +45,7 @@ import com.nathcat.peoplecat_client_android.ui.theme.secondaryColor
 
 
 class LoginActivity: ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +63,9 @@ class LoginActivity: ComponentActivity() {
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Column(
-                            modifier = Modifier.fillMaxSize().align(Alignment.Center)
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .align(Alignment.Center)
                         ) {
                             Box(
                                 modifier = Modifier
@@ -125,6 +133,14 @@ class LoginActivity: ComponentActivity() {
                 }
             }
         }
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 0);
+        }
     }
 }
 
@@ -145,7 +161,9 @@ fun LoginPreview() {
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxSize().align(Alignment.Center)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.Center)
                     ) {
                         Box(
                             modifier = Modifier

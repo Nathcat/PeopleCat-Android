@@ -11,8 +11,8 @@ android {
         applicationId = "com.nathcat.peoplecat_client_android"
         minSdk = 30
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "0.0.2-alpha"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

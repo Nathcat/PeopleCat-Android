@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                 if (authenticated) {
                     println("Service is already authenticated")
                     val i = Intent(this, ChatActivity::class.java)
-                    i.putExtra("chatId", 1)
+                    i.putExtra("chatId", 1.toLong())
                     startActivity(i)
                 }
                 else {

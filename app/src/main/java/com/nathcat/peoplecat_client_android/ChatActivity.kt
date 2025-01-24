@@ -60,7 +60,8 @@ class ChatActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        chatId = intent.extras?.getInt("chatId")
+        chatId = Math.toIntExact(intent.extras?.getLong("chatId")!!)
+        println("ChatID is $chatId")
 
         setContent {
             PeopleCatAndroidClientTheme {
@@ -86,7 +87,9 @@ class ChatActivity: ComponentActivity() {
                         LazyColumn(
                             state = listState,
                             userScrollEnabled = true,
-                            modifier = Modifier.fillMaxHeight(0.9f).fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxHeight(0.9f)
+                                .fillMaxWidth()
                         ) {
                             itemsIndexed(
                                 items = messages
@@ -151,7 +154,12 @@ class ChatActivity: ComponentActivity() {
                                 modifier = Modifier
                                     .padding(PaddingValues(horizontal = 5.dp))
                                     .background(
-                                        brush = Brush.linearGradient(listOf(gradientStart, gradientEnd)),
+                                        brush = Brush.linearGradient(
+                                            listOf(
+                                                gradientStart,
+                                                gradientEnd
+                                            )
+                                        ),
                                         shape = CircleShape
                                     )
                                     .align(Alignment.CenterVertically)

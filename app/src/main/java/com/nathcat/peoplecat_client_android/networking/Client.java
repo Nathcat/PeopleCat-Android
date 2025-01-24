@@ -2,6 +2,8 @@ package com.nathcat.peoplecat_client_android.networking;
 
 import android.Manifest;
 import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Network;
 import android.os.Message;
@@ -11,6 +13,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.nathcat.peoplecat_client_android.ChatActivity;
 import com.nathcat.peoplecat_client_android.FileManager;
 import com.nathcat.peoplecat_client_android.R;
 import com.nathcat.peoplecat_server.Packet;
@@ -79,12 +82,21 @@ public class Client extends WebSocketClient {
             JSONObject userSearch = new JSONObject();
             userSearch.put("id", ((JSONObject) packets[0].getData().get("message")).get("senderId"));
 
+            int chatId = Math.toIntExact((long) packets[0].getData().get("chatId"));
+
             ns.unboundCallbacks.put(Packet.TYPE_GET_USER, (Packet[] search) -> {
-                Notification n = new NotificationCompat.Builder(ns, (String) ns.getText(R.string.app_name))
+                Intent intent = new Intent(ns, ChatActivity.class);
+                intent.putExtra("chatId", chatId);
+                intent.setAction(String.valueOf(chatId));  // Should be the chat ID
+                PendingIntent pendingIntent = PendingIntent.getActivities(ns, 0, new Intent[] { intent }, PendingIntent.FLAG_IMMUTABLE);
+
+                Notification n = new NotificationCompat.Builder(ns, (String) ns.getText(R.string.event_notif_channel))
                         .setSmallIcon(R.drawable.cat_notification)
                         .setContentTitle("New message")
                         .setContentText(search[0].getData().get("username") + " sent a message")
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true)
                         .build();
 
                 if (ActivityCompat.checkSelfPermission(ns, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -110,13 +122,7 @@ public class Client extends WebSocketClient {
             return null;
         });
 
-        if (userFile != null) {
-            try {
-                ns.messenger.send(NetworkerService.encodePacket(Packet.createPacket(Packet.TYPE_AUTHENTICATE, true, userFile)));
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        send(Packet.createPacket(Packet.TYPE_AUTHENTICATE, true, userFile).getBytes());
     }
 
     @Override
@@ -149,18 +155,7 @@ public class Client extends WebSocketClient {
 
     @Override
     public void onClose(int i, String s, boolean b) {
-        System.out.println("Client: Client was closed, waiting for reconnect.");
-
-        // Re-attempt connection!
-        try {
-            Thread.sleep(CONNECT_REATTEMPT_DELAY);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        System.out.println("Client: Reconnecting...");
-
-        ns.openConnection();
+        System.out.println("Client: Client was closed.");
     }
 
     @Override
@@ -173,6 +168,8 @@ public class Client extends WebSocketClient {
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
         }
+
+        System.err.println("Trying to reconnect...");
 
         ns.openConnection();
     }

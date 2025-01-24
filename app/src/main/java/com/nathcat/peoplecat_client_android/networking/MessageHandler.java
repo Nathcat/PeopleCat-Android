@@ -8,6 +8,7 @@ import android.os.RemoteException;
 
 import com.nathcat.peoplecat_server.Packet;
 
+import org.java_websocket.enums.ReadyState;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -68,8 +69,23 @@ public class MessageHandler extends Handler {
         }
         else if (msg.what == -3) {
             // Application is asking to restart the server connection
-            if (ns.socket.isOpen()) ns.socket.send(Packet.createClose().getBytes());
-            ns.socket.close();
+            System.out.println("Application asked to reset socket!");
+
+            if (ns.socket != null && ns.socket.getReadyState() == ReadyState.NOT_YET_CONNECTED) {
+                System.out.println("Socket is not yet connected! Will do nothing.");
+                return;
+            }
+
+            if (ns.socket != null && ns.socket.isOpen()) {
+                System.out.println("Existing connection, sending close packet.");
+                ns.socket.send(Packet.createClose().getBytes());
+
+            }
+            if (ns.socket != null) {
+                System.out.println("Existing socket, manually closing.");
+                ns.socket.close();
+            }
+
             ns.openConnection();
             return;
         }

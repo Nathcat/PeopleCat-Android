@@ -19,21 +19,12 @@ import androidx.core.app.NotificationCompat;
 import com.nathcat.peoplecat_client_android.R;
 import com.nathcat.peoplecat_server.Packet;
 
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -69,7 +60,8 @@ public class NetworkerService extends Service {
         }
     }
 
-    public NotificationChannel notificationChannel;
+    public NotificationChannel serviceChannel;
+    public NotificationChannel eventChannel;
     protected Client socket;
     protected HashMap<Integer, IRequestCallback> unboundCallbacks = new HashMap<>();
     protected boolean authenticated = false;
@@ -148,7 +140,10 @@ public class NetworkerService extends Service {
      * Attempt to open a new connection to the server
      */
     protected void openConnection() {
+        if (socket != null && !socket.isClosed()) socket.close();
         socket = new Client(this, SERVER_URI);
+        authenticated = false;
+        user = null;
         socket.connect();
     }
 
@@ -176,14 +171,17 @@ public class NetworkerService extends Service {
     @RequiresApi(api = 34)
     @Override
     public void onCreate() {
-        notificationChannel = new NotificationChannel((String) getText(R.string.app_name), "PeopleCat Service", NotificationManager.IMPORTANCE_HIGH);
-        getSystemService(NotificationManager.class).createNotificationChannel(notificationChannel);
+        serviceChannel = new NotificationChannel((String) getText(R.string.service_notif_channel), "PeopleCat Service", NotificationManager.IMPORTANCE_NONE);
+        getSystemService(NotificationManager.class).createNotificationChannel(serviceChannel);
+
+        eventChannel = new NotificationChannel((String) getText(R.string.event_notif_channel), "PeopleCat Events", NotificationManager.IMPORTANCE_HIGH);
+        getSystemService(NotificationManager.class).createNotificationChannel(eventChannel);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (socket == null || socket.isClosed()) {
-            startForeground(1, new NotificationCompat.Builder(this, (String) getText(R.string.app_name))
+            startForeground(1, new NotificationCompat.Builder(this, (String) getText(R.string.service_notif_channel))
                     .setContentTitle("PeopleCat")
                     .setContentText("PeopleCat service is running")
                     .setPriority(NotificationCompat.PRIORITY_MIN)

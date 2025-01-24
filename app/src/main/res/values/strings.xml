@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PeopleCat</string>
+    <string name="service_notif_channel">PeopleCat Service Notification Channel</string>
+    <string name="event_notif_channel">PeopleCat Events Notification Channel</string>
 </resources>

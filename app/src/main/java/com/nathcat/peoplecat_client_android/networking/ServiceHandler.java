@@ -267,6 +267,11 @@ public class ServiceHandler {
     }
 
     public void close() {
-        if (context != null) context.unbindService(serviceConnection);
+        try {
+            if (context != null && isBound()) context.unbindService(serviceConnection);
+        }
+        catch (IllegalArgumentException e) {
+            System.err.println("Tried to unbind from unbound service!");
+        }
     }
 }
