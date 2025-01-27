@@ -60,7 +60,7 @@ class ChatActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        chatId = Math.toIntExact(intent.extras?.getLong("chatId")!!)
+        chatId = intent.extras?.getInt("chatId")
         println("ChatID is $chatId")
 
         setContent {
