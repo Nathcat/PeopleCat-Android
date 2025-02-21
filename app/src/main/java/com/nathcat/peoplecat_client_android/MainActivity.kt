@@ -50,12 +50,24 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
+        println("onStop")
+
         serviceHandler.close()
     }
 
     override fun onStop() {
         super.onStop()
 
+        println("onStop")
+
         serviceHandler.close()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        println("onResume")
+
+        serviceHandler.init(this)
     }
 }
