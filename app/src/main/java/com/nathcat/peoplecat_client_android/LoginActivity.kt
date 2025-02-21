@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -92,6 +93,7 @@ class LoginActivity: ComponentActivity() {
                                 value = username,
                                 onValueChange = { username = it },
                                 label = { Text("Username") },
+                                colors = OutlinedTextFieldDefaults.colors( unfocusedContainerColor = primaryColor ),
                                 modifier = Modifier
                                     .align(Alignment.CenterHorizontally)
                                     .padding(PaddingValues(vertical = 10.dp))
@@ -102,6 +104,7 @@ class LoginActivity: ComponentActivity() {
                                 onValueChange = { password = it },
                                 label = { Text("Password") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                                colors = OutlinedTextFieldDefaults.colors( unfocusedContainerColor = primaryColor ),
                                 modifier = Modifier
                                     .align(Alignment.CenterHorizontally)
                                     .padding(PaddingValues(vertical = 10.dp))
