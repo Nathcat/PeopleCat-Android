@@ -104,6 +104,7 @@ public class ServiceHandler {
             System.out.println("ServiceHandler: Bound to service, setting up");
             serviceMessenger = new Messenger(iBinder);
             isBound = true;
+            initialised = true;
 
             Message m = Message.obtain();
             m.what = -2;
@@ -138,15 +139,16 @@ public class ServiceHandler {
             //}
 
             context.bindService(new Intent(context, NetworkerService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-
-            initialised = true;
         }
     }
 
     public void init(Context context, IOnBind onBind) {
+        this.onBind = onBind;
         if (!initialised) {
-            this.onBind = onBind;
             init(context);
+        }
+        else {
+            onBind.run();
         }
     }
 
@@ -269,6 +271,7 @@ public class ServiceHandler {
     public void close() {
         try {
             if (context != null && isBound()) context.unbindService(serviceConnection);
+            initialised = false;
         }
         catch (IllegalArgumentException e) {
             System.err.println("Tried to unbind from unbound service!");

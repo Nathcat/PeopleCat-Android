@@ -17,6 +17,7 @@
         android:roundIcon="@mipmap/cat_envelope_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PeopleCatAndroidClient"
+        android:persistent="true"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
