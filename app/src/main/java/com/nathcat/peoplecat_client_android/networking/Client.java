@@ -82,12 +82,13 @@ public class Client extends WebSocketClient {
             JSONObject userSearch = new JSONObject();
             userSearch.put("id", ((JSONObject) packets[0].getData().get("message")).get("senderId"));
 
-            int chatId = Math.toIntExact((long) packets[0].getData().get("chatId"));
+            int chatId = Math.toIntExact((long) ((JSONObject) packets[0].getData().get("chat")).get("chatId"));
+            System.out.println("Notifying: " + ((JSONObject) packets[0].getData().get("chat")).toJSONString());
 
             ns.unboundCallbacks.put(Packet.TYPE_GET_USER, (Packet[] search) -> {
                 Intent intent = new Intent(ns, ChatActivity.class);
-                intent.putExtra("chatId", chatId);
-                intent.setAction(String.valueOf(chatId));  // Should be the chat ID
+                intent.putExtra("chat", ((JSONObject) packets[0].getData().get("chat")).toJSONString());
+                intent.setAction("chat");
                 PendingIntent pendingIntent = PendingIntent.getActivities(ns, 0, new Intent[] { intent }, PendingIntent.FLAG_IMMUTABLE);
 
                 Notification n = new NotificationCompat.Builder(ns, (String) ns.getText(R.string.event_notif_channel))

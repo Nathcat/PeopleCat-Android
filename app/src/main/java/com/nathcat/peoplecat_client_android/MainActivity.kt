@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
             serviceHandler.waitUntilAuth { authenticated, user ->
                 if (authenticated) {
                     println("Service is already authenticated")
-                    val i = Intent(this, ChatActivity::class.java)
+                    val i = Intent(this, ChatListActivity::class.java)
                     i.putExtra("chatId", 1)
                     startActivity(i)
                 }

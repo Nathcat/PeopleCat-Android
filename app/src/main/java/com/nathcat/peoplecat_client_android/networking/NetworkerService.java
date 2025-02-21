@@ -1,9 +1,13 @@
 package com.nathcat.peoplecat_client_android.networking;
 
+import android.Manifest;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,8 +18,11 @@ import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import com.nathcat.peoplecat_client_android.ChatActivity;
 import com.nathcat.peoplecat_client_android.R;
 import com.nathcat.peoplecat_server.Packet;
 
@@ -26,6 +33,7 @@ import org.json.simple.parser.ParseException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Foreground service which manages background and application level networking tasks off the main thread of the application.

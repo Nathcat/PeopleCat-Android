@@ -43,6 +43,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.nathcat.peoplecat_client_android.components.Message
+import com.nathcat.peoplecat_client_android.components.PageHeader
 import com.nathcat.peoplecat_client_android.networking.ServiceHandler
 import com.nathcat.peoplecat_client_android.ui.theme.PeopleCatAndroidClientTheme
 import com.nathcat.peoplecat_client_android.ui.theme.gradientEnd
@@ -51,18 +52,21 @@ import com.nathcat.peoplecat_client_android.ui.theme.primaryColor
 import com.nathcat.peoplecat_client_android.ui.theme.quadColor
 import com.nathcat.peoplecat_server.Packet
 import org.json.simple.JSONObject
+import org.json.simple.parser.JSONParser
 import java.util.Date
 
 
 class ChatActivity: ComponentActivity() {
     private val serviceHandler: ServiceHandler = ServiceHandler()
     private var chatId: Int? = null
+    private var chatData: JSONObject? = null
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        chatId = intent.extras?.getInt("chatId")
+        chatData = JSONParser().parse(intent.extras?.getString("chat")) as JSONObject?
+        chatId = Math.toIntExact(chatData!!.get("chatId") as Long)
         println("ChatID is $chatId")
 
         setContent {
@@ -86,6 +90,16 @@ class ChatActivity: ComponentActivity() {
                     Column(
                         modifier = Modifier.fillMaxSize()
                     ) {
+                        PageHeader(
+                            showButton = true,
+                            buttonContent = { Text("Back") },
+                            buttonOnClick = {
+                                startActivity(Intent(this@ChatActivity, ChatListActivity::class.java))
+                            },
+
+                            titleText = chatData!!.get("name") as String
+                        )
+
                         LazyColumn(
                             state = listState,
                             userScrollEnabled = true,
@@ -216,7 +230,7 @@ class ChatActivity: ComponentActivity() {
 
                                 serviceHandler.register(Packet.TYPE_NOTIFICATION_MESSAGE) {packets: Array<Packet> ->
                                     println("Application received message notification")
-                                    if (Math.toIntExact(packets[0].data["chatId"] as Long) == chatId) {
+                                    if (Math.toIntExact((packets[0].data["chat"] as JSONObject)["chatId"] as Long) == chatId) {
                                         println("Chat ID and chat being viewed match!")
                                         messages.add(packets[0].data["message"] as JSONObject)
                                     }
